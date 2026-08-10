@@ -309,6 +309,12 @@ const params = new URLSearchParams(location.search);
 // The publish base lives in settings.json (same origin), so no URL is hardcoded here.
 let CONFIG_FILE = params.get('config') || 'config.json';
 
+// Preview mode: the owner dashboard embeds this page as ?preview=1 and streams a
+// DRAFT config in over postMessage, so edits render live before publishing. In
+// this mode we never fetch, poll, or register the service worker — the parent
+// window is the only source of config.
+const PREVIEW = params.has('preview');
+
 async function resolveConfigFile(){
   if (params.get('config')) return;            // explicit override wins
   const slug = params.get('p');
@@ -326,7 +332,8 @@ let CFG = null, currentLang = null, currentPanel = 'welcome', currentCat = 0;
 let servingCached = false;   // true when the guide on screen came from the last-good copy
 
 const esc = s => String(s == null ? '' : s)
-  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  .replace(/"/g,'&quot;').replace(/'/g,'&#39;');   // also safe inside HTML attributes
 
 /* ---- Last-good config (offline resilience) ----
    Persist the published config on every successful load, keyed by its URL, so a
@@ -598,7 +605,7 @@ window.addEventListener('online', updateOfflineBadge);
 window.addEventListener('offline', updateOfflineBadge);
 
 /* ---- Service worker ---- */
-if ('serviceWorker' in navigator) {
+if (!PREVIEW && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('service-worker.js').catch(e => console.log('SW failed:', e));
   });
@@ -610,7 +617,7 @@ if ('serviceWorker' in navigator) {
    hand-edited config.json — fall back to comparing the raw text. */
 let lastConfigText = null, lastVersion = null;
 setInterval(async () => {
-  if (!navigator.onLine) return;
+  if (PREVIEW || !navigator.onLine) return;
   try {
     const res = await fetch(CONFIG_FILE + '?t=' + Date.now(), {cache:'no-store'});
     const text = await res.text();
@@ -626,7 +633,40 @@ setInterval(async () => {
   } catch(e){ /* offline or blocked — ignore */ }
 }, 5 * 60 * 1000);
 
-boot();
+/* ---- Preview bridge: render DRAFT configs streamed from the owner dashboard ----
+   Active only in ?preview=1 mode (see PREVIEW above). The dashboard embeds this
+   page in an iframe and posts the draft config on every edit, so owners see
+   changes live before publishing. Origin-guarded; carries no secrets. */
+function isAllowedPreviewOrigin(origin){
+  try {
+    const u = new URL(origin);
+    if (u.hostname === 'localhost' || u.hostname === '127.0.0.1') return true; // dev
+    if (u.hostname === 'app.estadiaco.com') return true;                       // prod dashboard
+    if (u.hostname.endsWith('.vercel.app')) return true;                       // preview deploys
+  } catch(_){}
+  return false;
+}
+function initPreview(){
+  window.addEventListener('message', (e) => {
+    if (!isAllowedPreviewOrigin(e.origin)) return;
+    const d = e.data;
+    if (!d || d.type !== 'nido-preview' || !d.config) return;
+    try {
+      applyConfig(d.config, false);
+      if (d.lang && d.config[d.lang]) {   // follow the language the owner is editing
+        currentLang = d.lang;
+        renderSplash();
+        render();
+      }
+    } catch(err){ console.log('preview render failed:', err); }
+  });
+  // Let the parent know we're ready to receive the first draft.
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: 'nido-preview-ready' }, '*');
+  }
+}
+
+if (PREVIEW) initPreview(); else boot();
 </script>
 </body>
 </html>
