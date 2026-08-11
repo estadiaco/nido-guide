@@ -303,11 +303,19 @@ h1.pagehead{
 
 const params = new URLSearchParams(location.search);
 // Config source resolution:
-//   ?config=<url>  → use it directly (explicit override)
+//   ?config=<url>  → use it directly, SAME-ORIGIN only (explicit override)
 //   ?p=<slug>      → expand to <publishBase>/<slug>/config.json via settings.json
 //   otherwise      → the in-repo config.json
 // The publish base lives in settings.json (same origin), so no URL is hardcoded here.
-let CONFIG_FILE = params.get('config') || 'config.json';
+// ?config= is restricted to same-origin so a crafted link can't make the tablet
+// fetch an attacker-hosted config. Relative paths (config-other.json) stay
+// same-origin and are allowed; a cross-origin URL is ignored (falls back below).
+function sameOriginConfig(value){
+  try { return new URL(value, location.href).origin === location.origin ? value : null; }
+  catch(_){ return null; }
+}
+const configOverride = params.get('config') ? sameOriginConfig(params.get('config')) : null;
+let CONFIG_FILE = configOverride || 'config.json';
 
 // Preview mode: the owner dashboard embeds this page as ?preview=1 and streams a
 // DRAFT config in over postMessage, so edits render live before publishing. In
@@ -316,7 +324,7 @@ let CONFIG_FILE = params.get('config') || 'config.json';
 const PREVIEW = params.has('preview');
 
 async function resolveConfigFile(){
-  if (params.get('config')) return;            // explicit override wins
+  if (configOverride) return;                  // explicit (same-origin) override wins
   const slug = params.get('p');
   if (slug && /^[a-z0-9-]+$/i.test(slug)) {    // guard: only plain slugs build a URL
     try {
@@ -352,7 +360,12 @@ function loadLastGood(){
 function applyConfig(cfg, fromCache){
   CFG = cfg;
   servingCached = !!fromCache;
-  if (cfg.theme) document.getElementById('themeLink').href = cfg.theme;
+  // Only a local themes/*.css path (mirrors server-side validateConfig) — a hostile
+  // config (via preview or ?config=) can't point the stylesheet at an external or
+  // javascript: URL.
+  if (typeof cfg.theme === 'string' && /^themes\/[\w-]+\.css$/.test(cfg.theme)) {
+    document.getElementById('themeLink').href = cfg.theme;
+  }
   currentLang = (cfg.languages && cfg.languages[0] && cfg.languages[0].code) || 'en';
   renderSplash();
   render();
@@ -637,12 +650,16 @@ setInterval(async () => {
    Active only in ?preview=1 mode (see PREVIEW above). The dashboard embeds this
    page in an iframe and posts the draft config on every edit, so owners see
    changes live before publishing. Origin-guarded; carries no secrets. */
+// Vercel preview deploys for THIS project only — e.g. nido-dashboard.vercel.app or
+// nido-dashboard-<hash>-<scope>.vercel.app — never the shared *.vercel.app space.
+// Update the "nido-dashboard" prefix here if the Vercel project is renamed.
+const DASH_VERCEL = /^nido-dashboard(-[a-z0-9-]+)?\.vercel\.app$/;
 function isAllowedPreviewOrigin(origin){
   try {
     const u = new URL(origin);
     if (u.hostname === 'localhost' || u.hostname === '127.0.0.1') return true; // dev
     if (u.hostname === 'app.estadiaco.com') return true;                       // prod dashboard
-    if (u.hostname.endsWith('.vercel.app')) return true;                       // preview deploys
+    if (DASH_VERCEL.test(u.hostname)) return true;                             // this project's preview deploys
   } catch(_){}
   return false;
 }
