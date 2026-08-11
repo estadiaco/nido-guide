@@ -410,7 +410,7 @@ function renderSplash(){
     </svg>
     <div class="rule"></div>
     <div class="greet">${esc(ui.splashWelcome)}</div>
-    <div class="guest">${esc(p.guestName)}</div>
+    ${p.guestName ? `<div class="guest">${esc(p.guestName)}</div>` : ''}
     <div class="splash-lang">
       ${CFG.languages.map(l => `<button class="splash-lang-btn ${l.code===currentLang?'active':''}" data-lang="${esc(l.code)}">${esc(l.label)}</button>`).join('')}
     </div>
@@ -510,7 +510,7 @@ function bodyWelcome(L, ui, p){
         <p>${esc(L.welcome.hostNote)}</p>
         <div class="host">
           <div>${esc(ui.hostedBy)} ${esc(p.hostName)}</div>
-          <div class="ph">${esc(p.hostPhone)}</div>
+          ${p.hostPhone ? `<div class="ph">${esc(p.hostPhone)}</div>` : ''}
         </div>
       </div>
     </div>
