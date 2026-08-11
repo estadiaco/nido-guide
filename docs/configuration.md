@@ -35,7 +35,7 @@ secrets server-only.
 
 | Where | Name | What it does |
 |---|---|---|
-| `index.html` URL | `?p=<slug>` | **Preferred** — the short tablet URL. The guide expands it to `<publishBase>/<slug>/config.json` using `settings.json`. Set as the tablet's start URL (Fully Kiosk), e.g. `https://nido.estadiaco.com/?p=playas-del-yunque`. |
+| `index.html` URL | `?p=<key>` | **Preferred** — the short tablet URL, where `<key>` is the property's serving key: its unguessable `public_id` by default, or its readable `slug` if `url_key_mode='slug'`. The guide expands it to `<publishBase>/<key>/config.json` using `settings.json`. Set as the tablet's start URL (Fully Kiosk). |
 | `index.html` URL | `?config=<url>` | Escape hatch — load a config from an explicit URL (wins over `?p=`). **Restricted to same-origin** (a cross-origin URL is ignored). Defaults to the in-repo `config.json` when neither is given. |
 | `settings.json` | `publishBase` | The Supabase Storage folder that holds published files — the one place the Supabase URL lives (config, not code). Change it only if the Supabase project changes. Same-origin with the guide and precached for offline. |
 | `service-worker.js` | `CACHE_VERSION` | Cache-buster (currently `v13`). Bump it (`v13` → `v14` …) after editing `index.html`, `settings.json`, or a theme, so tablets discard the old cached shell. See `service-worker.js:2`. |
