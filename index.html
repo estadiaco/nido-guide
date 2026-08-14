@@ -454,7 +454,7 @@ const LAYOUTS = {
   'rules-as-tab': [
     { id:'welcome',  label:(L,ui)=>ui.navWelcome,   head:(L,ui)=>ui.welcomeHead,   sub:(L)=>L.welcome.sub, body:(L,ui,p)=>bodyWelcome(L,ui,p) },
     { id:'guide',    label:(L,ui)=>ui.navGuide,     head:(L,ui)=>ui.guideHead,     sub:(L)=>L.guide.sub,   body:(L)=>`<div class="guide-grid">${bodyCards(L)}</div>` },
-    { id:'rules',    label:(L)=>L.guide.rulesTitle, head:(L)=>L.guide.rulesTitle,  sub:()=>null,           body:(L)=>`<div class="guide-grid">${bodyRulesCard(L, false)}</div>` },
+    { id:'rules',    label:(L,ui)=>ui.navRules || L.guide.rulesTitle, head:(L)=>L.guide.rulesTitle,  sub:()=>null,           body:(L)=>`<div class="guide-grid">${bodyRulesCard(L, false)}</div>` },
     { id:'checkout', label:(L,ui)=>ui.navCheckout,  head:(L,ui)=>ui.checkoutHead,  sub:()=>null,           body:(L,ui,p)=>bodyCheckout(L,ui,p) },
     { id:'local',    label:(L,ui)=>ui.navLocal,     head:(L,ui)=>ui.localHead,     sub:()=>null,           body:(L)=>bodyLocal(L) },
   ],
