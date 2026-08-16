@@ -51,6 +51,11 @@ body{
   font-size:clamp(46px, 9vw, 104px); color:var(--brand);
   letter-spacing:-2px; line-height:1.02; margin:6px 0 18px;
 }
+/* Owner-chosen splash text sizes (md = the default above; sm/lg scale it). */
+#splash .greet.size-sm{font-size:clamp(22px, 3.2vw, 34px);}
+#splash .greet.size-lg{font-size:clamp(34px, 5.4vw, 60px);}
+#splash .guest.size-sm{font-size:clamp(34px, 6.5vw, 76px);}
+#splash .guest.size-lg{font-size:clamp(58px, 11.5vw, 132px);}
 #splash .place{
   font-family:var(--font-display); font-weight:300;
   font-size:clamp(20px, 3.2vw, 36px); color:var(--ink);
@@ -402,6 +407,7 @@ async function boot(){
 function renderSplash(){
   const ui = CFG[currentLang].ui, p = CFG.property;
   const splash = document.getElementById('splash');
+  const sz = s => (s === 'sm' || s === 'lg') ? s : 'md';
   splash.innerHTML = `
     <svg class="splash-art" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <path class="ridge" pathLength="1" d="M10,230 C50,190 70,140 110,115 C140,97 150,80 175,90 C195,98 190,120 220,122 C260,125 265,75 305,50 C330,35 350,50 365,65 C378,78 385,95 392,115"></path>
@@ -409,8 +415,8 @@ function renderSplash(){
       <path class="mist" pathLength="1" d="M238,32 C256,25 274,25 290,32"></path>
     </svg>
     <div class="rule"></div>
-    <div class="greet">${esc(ui.splashWelcome)}</div>
-    ${p.guestName ? `<div class="guest">${esc(p.guestName)}</div>` : ''}
+    <div class="greet size-${sz(p.splashWelcomeSize)}">${esc(ui.splashWelcome)}</div>
+    ${p.guestName ? `<div class="guest size-${sz(p.guestNameSize)}">${esc(p.guestName)}</div>` : ''}
     <div class="splash-lang">
       ${CFG.languages.map(l => `<button class="splash-lang-btn ${l.code===currentLang?'active':''}" data-lang="${esc(l.code)}">${esc(l.label)}</button>`).join('')}
     </div>
