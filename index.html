@@ -375,6 +375,7 @@ function applyConfig(cfg, fromCache){
   renderSplash();
   render();
   updateOfflineBadge();
+  scheduleIdleReset();   // arm the idle → welcome-splash timer (inert in PREVIEW)
 }
 
 function showBootError(err){
@@ -655,6 +656,39 @@ setInterval(async () => {
     lastConfigText = text;
   } catch(e){ /* offline or blocked — ignore */ }
 }, POLL_INTERVAL_MS);
+
+/* ---- Idle → return to the welcome splash (attract screen) ----
+   After IDLE_RESET_MS with no interaction, fade the welcome splash back over the
+   guide and reset it to the first tab + language, so the next guest starts fresh.
+   Also re-shows the splash when the page becomes visible again (screen sleep→wake).
+   Pure web — no fully.* — so the guide stays portable to any kiosk shell. Inert in
+   PREVIEW so the dashboard's live preview is never taken over. */
+const IDLE_RESET_MS = 5 * 60 * 1000;
+let idleTimer = null;
+function returnToSplash(){
+  if (PREVIEW || !CFG) return;
+  const splash = document.getElementById('splash');
+  if (!splash || !splash.classList.contains('hidden')) return; // already on the splash
+  currentLang  = (CFG.languages && CFG.languages[0] && CFG.languages[0].code) || currentLang;
+  currentPanel = 'welcome';   // clean initial tab (mirrors the boot default)
+  currentCat   = 0;
+  renderSplash();
+  render();
+  const main = document.querySelector('main'); if (main) main.scrollTop = 0;
+  splash.classList.remove('hidden'); // fades in via the existing 0.5s transition
+}
+function scheduleIdleReset(){
+  if (PREVIEW) return;
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(returnToSplash, IDLE_RESET_MS);
+}
+['pointerdown','keydown'].forEach(ev =>
+  window.addEventListener(ev, scheduleIdleReset, {passive:true}));
+document.addEventListener('visibilitychange', () => {
+  if (PREVIEW) return;
+  if (document.hidden) { clearTimeout(idleTimer); }
+  else { returnToSplash(); scheduleIdleReset(); }
+});
 
 /* ---- Preview bridge: render DRAFT configs streamed from the owner dashboard ----
    Active only in ?preview=1 mode (see PREVIEW above). The dashboard embeds this
