@@ -20,7 +20,7 @@ verify — any layout × any theme is an unbounded set, and a malformed config c
 tablet. Instead, layouts and themes are **fixed, vetted lists**, so the shippable universe is a
 small grid where every cell is tested:
 
-| | yunque | slate |
+| | green | slate |
 |---|---|---|
 | **standard** (rules in Guide) | ✓ | ✓ |
 | **rules-as-tab** | ✓ | ✓ |

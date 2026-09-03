@@ -12,6 +12,12 @@ A theme is one CSS file that sets variables. It never contains layout —
 
 That's the whole process. Content is untouched.
 
+**Exception:** `themes/green.css` deliberately breaks the "no layout" rule for one
+thing — the splash-screen decoration. It hides the renderer's default mountain SVG and
+shows/positions its own palm-tree SVG instead (both are always rendered in
+`index.html`; the theme only controls visibility/placement, never shape data). This is
+a contained, documented exception, not a pattern to copy casually into new themes.
+
 ## The token contract
 
 Every theme must define all of these. The renderer reads only these names,

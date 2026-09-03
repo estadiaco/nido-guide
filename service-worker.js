@@ -1,11 +1,11 @@
 /* Bump CACHE_VERSION after editing index.html or a theme file. */
-const CACHE_VERSION = 'v19';
+const CACHE_VERSION = 'v20';
 const CACHE_NAME = 'guest-guide-' + CACHE_VERSION;
 
 const PRECACHE_URLS = [
   './', './index.html', './config.json', './settings.json', './manifest.json',
   './icon-192.png', './icon-512.png',
-  './themes/yunque.css', './themes/slate.css'
+  './themes/green.css', './themes/slate.css'
 ];
 
 self.addEventListener('install', e => {

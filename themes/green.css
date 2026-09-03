@@ -1,0 +1,73 @@
+/* ============================================================
+   THEME: Green
+   Flat, airy, light. Muted rainforest greens — sage and moss,
+   nothing saturated. No shadows, no gradients, hairline borders.
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Karla:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root{
+  /* ---- Color ---- */
+  --bg:            #F4F7F2;   /* pale green-tinted paper */
+  --surface:       #FFFFFF;
+  --surface-alt:   #EDF2EA;   /* soft inset wash */
+  --brand:         #4A6551;   /* muted forest — headers, headings */
+  --brand-soft:    #DDE7DC;   /* tinted fill */
+  --on-brand:      #F4F7F2;
+  --accent:        #7D9B82;   /* sage highlight, deliberately quiet */
+  --on-accent:     #FFFFFF;
+  --ink:           #2C332D;
+  --ink-muted:     #728073;
+  --line:          #DFE6DC;
+
+  /* ---- Type ---- */
+  --font-display:  'Outfit', system-ui, sans-serif;
+  --font-body:     'Karla', system-ui, sans-serif;
+  --font-mono:     'IBM Plex Mono', ui-monospace, monospace;
+  --h1-size:       40px;
+  --h1-weight:     300;
+  --h1-tracking:   -0.5px;
+  --body-size:     16px;
+
+  /* ---- Shape & space ---- */
+  --radius:        8px;
+  --radius-lg:     14px;
+  --pill:          999px;
+  --border:        1px;
+  --card-pad:      28px 30px;
+  --section-gap:   22px;
+  --elevation:     none;      /* flat design: no shadows */
+}
+
+/* ---------- Splash decoration: palm tree, not the shared mountain ----------
+   The renderer (index.html) draws two decorative splash SVGs unconditionally
+   (.splash-art--mountain and .splash-art--palm) and defaults to showing only
+   the mountain, on every theme. This is Green's deliberate, contained
+   exception (precedent: the reverted Coastal theme also overrode splash
+   positioning from a theme file) — it hides the mountain and shows/positions
+   the palm instead. Shape data still lives in index.html; this file only
+   decides visibility + placement, per README-THEMES.md.
+
+   The padding-left "gutter" physically reserves space for the palm so the
+   centered splash text can never render on top of it (padding is excluded
+   from the flex content box before text wraps) — a hard guarantee, not a
+   z-index trick. Landscape-only (>860px); portrait keeps the base 8vw
+   padding and the shared media query already hides all .splash-art there.
+
+   Every property below is !important: the base .splash-art rule (right/top/
+   transform/width/height) loads AFTER this theme file and has the same
+   specificity, so without !important on each one individually those base
+   values silently win per-property and the palm renders at the mountain's
+   size/position instead of its own. */
+#splash .splash-art--mountain{ display:none !important; }
+@media (min-width:861px){
+  #splash{ padding-left: clamp(180px, 24vw, 280px) !important; }
+  #splash .splash-art--palm{
+    display:block !important;
+    position:absolute !important; z-index:-1 !important; pointer-events:none !important;
+    left:3vw !important; right:auto !important; top:auto !important; bottom:0 !important;
+    transform:none !important;
+    height:clamp(260px, 58vh, 480px) !important; width:auto !important;
+    opacity:.55 !important;
+  }
+}
+/* ---------- /Splash decoration ---------- */
