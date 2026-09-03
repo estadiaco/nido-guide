@@ -52,6 +52,9 @@
    from the flex content box before text wraps) — a hard guarantee, not a
    z-index trick. Landscape-only (>860px); portrait keeps the base 8vw
    padding and the shared media query already hides all .splash-art there.
+   padding-right mirrors it so the flexbox's centering stays on the screen's
+   true center instead of drifting right (the mirrored space is otherwise
+   unused — a deliberate trade-off for keeping the text visually centered).
 
    Every property below is !important: the base .splash-art rule (right/top/
    transform/width/height) loads AFTER this theme file and has the same
@@ -60,7 +63,10 @@
    size/position instead of its own. */
 #splash .splash-art--mountain{ display:none !important; }
 @media (min-width:861px){
-  #splash{ padding-left: clamp(180px, 24vw, 280px) !important; }
+  #splash{
+    padding-left: clamp(180px, 24vw, 280px) !important;
+    padding-right: clamp(180px, 24vw, 280px) !important;
+  }
   #splash .splash-art--palm{
     display:block !important;
     position:absolute !important; z-index:-1 !important; pointer-events:none !important;
