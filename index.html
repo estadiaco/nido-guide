@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 
 <!-- Theme is swapped at runtime from config.json -> "theme" -->
-<link id="themeLink" rel="stylesheet" href="themes/yunque.css">
+<link id="themeLink" rel="stylesheet" href="themes/green.css">
 
 <style>
 /* ============================================================
@@ -69,14 +69,18 @@ body{
 @keyframes pulse{0%,100%{opacity:.45;} 50%{opacity:1;}}
 
 /* ---------- Splash decorative art ----------
-   Self-contained: one SVG block + this CSS block. Doesn't affect the
-   centered text layout above (absolutely positioned, sits behind it).
-   Safe to delete both blocks together with no side effects elsewhere. */
+   Two SVG blocks (mountain + palm) are always rendered; this default CSS
+   shows only the mountain, on every theme. A theme file may override this
+   (e.g. themes/green.css hides the mountain and shows/positions the palm
+   instead) — that's a deliberate, documented per-theme exception, not the
+   general case. Base positioning here is absolute/behind-text/non-interactive
+   so an untouched theme's layout is unaffected. */
 #splash .splash-art{
   position:absolute; z-index:-1; pointer-events:none;
   right:4vw; top:50%; transform:translateY(-50%);
   width:clamp(200px, 28vw, 380px); height:auto; opacity:.55;
 }
+#splash .splash-art--palm{ display:none; }
 #splash .splash-art path{
   fill:none; stroke:var(--accent); stroke-linecap:round; stroke-linejoin:round;
   stroke-dasharray:1; stroke-dashoffset:1;
@@ -86,6 +90,20 @@ body{
 #splash .splash-art .mist{stroke-width:1.4; opacity:.8;}
 #splash .splash-art .mist:nth-of-type(2){animation-delay:1.2s;}
 #splash .splash-art .mist:nth-of-type(3){animation-delay:2s;}
+/* Palm parts (Green theme only shows these, via .splash-art--palm above) */
+#splash .splash-art .trunk{stroke-width:2.6;}
+#splash .splash-art .bark{stroke-width:1; opacity:.6;}
+#splash .splash-art .bark:nth-of-type(2){animation-delay:.5s;}
+#splash .splash-art .bark:nth-of-type(3){animation-delay:.9s;}
+#splash .splash-art .frond{stroke-width:1.5; opacity:.85;}
+#splash .splash-art .frond.f1{animation-delay:1.3s;}
+#splash .splash-art .frond.f2{animation-delay:1.65s;}
+#splash .splash-art .frond.f3{animation-delay:2s;}
+#splash .splash-art .frond.f4{animation-delay:2.35s;}
+#splash .splash-art .frond.f5{animation-delay:2.7s;}
+#splash .splash-art .frond.f6{animation-delay:3.05s;}
+#splash .splash-art .frond.f7{animation-delay:3.4s;}
+#splash .splash-art--palm path{animation-duration:11s;}
 @keyframes splashArtDraw{
   0%,8%{stroke-dashoffset:1;}
   40%,70%{stroke-dashoffset:0;}
@@ -410,10 +428,22 @@ function renderSplash(){
   const splash = document.getElementById('splash');
   const sz = s => (s === 'sm' || s === 'lg') ? s : 'md';
   splash.innerHTML = `
-    <svg class="splash-art" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <svg class="splash-art splash-art--mountain" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <path class="ridge" pathLength="1" d="M10,230 C50,190 70,140 110,115 C140,97 150,80 175,90 C195,98 190,120 220,122 C260,125 265,75 305,50 C330,35 350,50 365,65 C378,78 385,95 392,115"></path>
       <path class="mist" pathLength="1" d="M132,58 C152,50 172,50 192,58"></path>
       <path class="mist" pathLength="1" d="M238,32 C256,25 274,25 290,32"></path>
+    </svg>
+    <svg class="splash-art splash-art--palm" viewBox="0 0 160 400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path class="trunk" pathLength="1" d="M45,392 C38,330 46,270 40,220 C34,170 50,130 62,90 C66,75 68,68 70,60"></path>
+      <path class="bark" pathLength="1" d="M34,330 L54,326"></path>
+      <path class="bark" pathLength="1" d="M32,250 L50,244"></path>
+      <path class="frond f1" pathLength="1" d="M70,60 C50,30 20,20 3,18"></path>
+      <path class="frond f2" pathLength="1" d="M70,60 C58,20 34,4 14,3"></path>
+      <path class="frond f3" pathLength="1" d="M70,60 C68,20 66,8 60,5"></path>
+      <path class="frond f4" pathLength="1" d="M70,60 C82,20 100,6 118,4"></path>
+      <path class="frond f5" pathLength="1" d="M70,60 C90,25 118,15 138,17"></path>
+      <path class="frond f6" pathLength="1" d="M70,60 C95,68 120,90 138,116"></path>
+      <path class="frond f7" pathLength="1" d="M70,60 C45,72 25,98 15,140"></path>
     </svg>
     <div class="rule"></div>
     <div class="greet size-${sz(p.splashWelcomeSize)}">${esc(ui.splashWelcome)}</div>

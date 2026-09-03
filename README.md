@@ -45,11 +45,11 @@ one stray comma blanks the page (you'll get an error screen explaining it).
 Set `"theme"` in `config.json` to any file in `themes/`:
 
 ```json
-"theme": "themes/yunque.css"
+"theme": "themes/green.css"
 ```
 
 Two ship with the project:
-- **yunque.css** — flat, airy, muted greens (current)
+- **green.css** — flat, airy, muted greens (current)
 - **slate.css** — cooler, squarer, serif headings
 
 To build your own, copy one and change the token values.

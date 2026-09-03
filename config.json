@@ -1,7 +1,7 @@
 {
   "_comment": "EDIT THIS FILE ONLY. To change the guest name between bookings, edit property.guestName and commit.",
 
-  "theme": "themes/yunque.css",
+  "theme": "themes/green.css",
 
   "property": {
     "guestName": "Maria",
