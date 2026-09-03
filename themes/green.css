@@ -60,20 +60,22 @@
    transform/width/height) loads AFTER this theme file and has the same
    specificity, so without !important on each one individually those base
    values silently win per-property and the palm renders at the mountain's
-   size/position instead of its own. */
+   size/position instead of its own. The palm SVG is a filled silhouette
+   (viewBox 320x420, wider per unit height than the old line-art draft), so
+   the gutter is sized wider to match — verify visually if either changes. */
 #splash .splash-art--mountain{ display:none !important; }
 @media (min-width:861px){
   #splash{
-    padding-left: clamp(180px, 24vw, 280px) !important;
-    padding-right: clamp(180px, 24vw, 280px) !important;
+    padding-left: clamp(230px, 26vw, 290px) !important;
+    padding-right: clamp(230px, 26vw, 290px) !important;
   }
   #splash .splash-art--palm{
     display:block !important;
     position:absolute !important; z-index:-1 !important; pointer-events:none !important;
     left:3vw !important; right:auto !important; top:auto !important; bottom:0 !important;
-    transform:none !important;
-    height:clamp(260px, 58vh, 480px) !important; width:auto !important;
-    opacity:.55 !important;
+    transform:scaleX(-1) !important; /* mirror so the crown leans toward the text, not away */
+    height:clamp(200px, 38vh, 340px) !important; width:auto !important;
+    fill:var(--accent) !important; opacity:.5 !important;
   }
 }
 /* ---------- /Splash decoration ---------- */
