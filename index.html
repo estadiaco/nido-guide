@@ -456,11 +456,11 @@ function renderSplash(){
     </svg>
     <div class="rule"></div>
     <div class="greet size-${sz(p.splashWelcomeSize)}">${esc(ui.splashWelcome)}</div>
-    ${p.guestName ? `<div class="guest size-${sz(p.guestNameSize)}">${esc(p.guestName)}</div>` : ''}
+    ${(ui.guestName || p.guestName) ? `<div class="guest size-${sz(p.guestNameSize)}">${esc(ui.guestName || p.guestName)}</div>` : ''}
     <div class="splash-lang">
       ${CFG.languages.map(l => `<button class="splash-lang-btn ${l.code===currentLang?'active':''}" data-lang="${esc(l.code)}">${esc(l.label)}</button>`).join('')}
     </div>
-    <div class="place">${esc(ui.splashConnector)} ${esc(p.locationLine)}</div>
+    <div class="place">${esc(ui.splashConnector)} ${esc(ui.locationLine || p.locationLine)}</div>
     <div class="enter">${esc(ui.splashEnter)}</div>
   `;
   splash.onclick = () => splash.classList.add('hidden');
@@ -515,7 +515,7 @@ function render(){
   document.getElementById('app').innerHTML = `
     <header>
       <div class="brand" id="homeBtn" title="${esc(ui.navHome)}">
-        <span class="nm">${esc(p.name)}</span>
+        <span class="nm">${esc(ui.displayName || p.name)}</span>
         <span class="tagline">${esc(ui.tagline)}</span>
       </div>
       <div class="header-right">
@@ -532,7 +532,7 @@ function render(){
     </main>`;
 
   document.documentElement.lang = currentLang;
-  document.title = p.name + ' — ' + ui.tagline;
+  document.title = (ui.displayName || p.name) + ' — ' + ui.tagline;
   wire();
   updateOfflineBadge();
 }
@@ -555,7 +555,7 @@ function bodyWelcome(L, ui, p){
         <div class="note-head">${esc(ui.hostNoteTitle)}</div>
         <p>${esc(L.welcome.hostNote)}</p>
         <div class="host">
-          <div>${esc(ui.hostedBy)} ${esc(p.hostName)}</div>
+          <div>${esc(ui.hostedBy)} ${esc(ui.hostName || p.hostName)}</div>
         </div>
       </div>
     </div>

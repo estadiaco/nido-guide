@@ -24,6 +24,10 @@
   "en": {
     "ui": {
       "tagline": "Guest Guide",
+      "displayName": "Playas del Yunque",
+      "hostName": "Anthony and David",
+      "guestName": "Maria",
+      "locationLine": "Playas del Yunque, Rio Grande, Puerto Rico",
       "splashWelcome": "Welcome",
       "splashConnector": "to",
       "splashEnter": "Tap anywhere to begin",
@@ -114,6 +118,10 @@
   "es": {
     "ui": {
       "tagline": "Guía para huéspedes",
+      "displayName": "Playas del Yunque",
+      "hostName": "Anthony and David",
+      "guestName": "Maria",
+      "locationLine": "Playas del Yunque, Rio Grande, Puerto Rico",
       "splashWelcome": "Bienvenido(a)",
       "splashConnector": "a",
       "splashEnter": "Toca en cualquier lugar para comenzar",
